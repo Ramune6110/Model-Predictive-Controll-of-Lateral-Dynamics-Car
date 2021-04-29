@@ -1,4 +1,4 @@
-function [psi_ref, X_ref, Y_ref] = trajectory_generator(t, r, f)
+function [psi_ref, X_ref, Y_ref] = trajectory_generator(t)
     constants = initial_constants();
     Ts = constants{10}; 
     x_dot = constants{16};

@@ -24,11 +24,20 @@ function constants = initial_constants()
     % Reference Signals‚ÌŒÂ”. ¡‰ñ‚Ípsi‚ÆY‚Ì“ñ‚Â‚È‚Ì‚Å2‚Æ‚·‚é
     controlled_states = 2;
     
-    hz    = 15; % horizon period
-    x_dot = 20;
-    r     = 5;
-    f     = 0.025;
+    hz = 20; % horizon period
+    Vx = 20;
     
-    constants={g m cd cr Iz Caf Car lf lr Ts Q S R controlled_states hz x_dot r f};
+    %% PID
+    PID_switch = 0; % Turn PID function ON/OFF (ON=1, OFF=0)
+
+    Kp_yaw = 1;
+    Kd_yaw = 2;
+    Ki_yaw = 3;
+
+    Kp_Y = 6;
+    Kd_Y = 6;
+    Ki_Y = 6;
+
+    constants={g m cd cr Iz Caf Car lf lr Ts Q S R controlled_states hz Vx PID_switch Kp_yaw Kd_yaw Ki_yaw Kp_Y Kd_Y Ki_Y};
     
 end

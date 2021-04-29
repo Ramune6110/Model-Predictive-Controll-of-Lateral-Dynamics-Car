@@ -8,13 +8,10 @@ constants         = initial_constants();
 Ts                = constants{10};
 controlled_states = constants{14}; % number of controlled states in this script
 hz                = constants{15}; % horizon period
-x_dot             = constants{16};
 
 %% Load the trajectory
 t = 0:Ts:7; % Use 7 second for lane change
-r = constants{17};
-f = constants{18};
-[psi_ref, X_ref, Y_ref] = trajectory_generator(t, r, f);
+[psi_ref, X_ref, Y_ref] = trajectory_generator(t);
 
 sim_length = length(t); % Number of control loop iterations
 
@@ -36,6 +33,7 @@ Y       = Y_ref(1, 2);
 % 状態量は以下の4つ
 % Vehicle Dynamics and Control (2nd edition) by Rajesh Rajamani. They are in Chapter 2.3. 
 states = [y_dot, psi, psi_dot, Y];
+old_states = states;
 % 全ての状態を保存する配列。各時間毎に保存。plotに使用
 states_total = zeros(length(t), length(states));
 states_total(1, :) = states;
@@ -45,12 +43,15 @@ states_total(1, :) = states;
 U1 = 0;
 UTotal = zeros(length(t), 1);
 UTotal(1, :) = U1;
-
+            
 k = 1; % for reading reference signals
+
 tic;
 for i = 1:sim_length - 1
+    %% Model Predictive Controll
+    %%%%%%%%%%%%%%%% Model Predictive Controll %%%%%%%%%%%%%%%%%%%%%%%%%%%%
     %% Generate discrete LPV Ad, Bd, Cd, Dd matrices
-    [Ad, Bd, Cd, Dd] = discrete_state_model(states);
+    [Ad, Bd, Cd, Dd] = discrete_state_model();
     
     %% Generating the current state and the reference vector
     x_aug_t = [states'; U1];
@@ -82,6 +83,51 @@ for i = 1:sim_length - 1
     
     % Update the real inputs
     U1 = U1 + du(1);
+    
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    
+    %% PID Controll
+    %%%%%%%%%%%%%%%%%%%%%%%%% PID Controll %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    PID_switch = constants{17};
+    
+    if PID_switch == 1
+        if i == 1
+            e_int_pid_yaw = 0;
+            e_int_pid_Y   = 0;
+        elseif i > 1
+            e_pid_yaw_im1 = psi_ref(i - 1, 2) - old_states(1, 2);
+            e_pid_yaw_i   = psi_ref(i, 2) - states(1, 2);
+            e_dot_pid_yaw = (e_pid_yaw_i - e_pid_yaw_im1) / Ts;
+            e_int_pid_yaw = e_int_pid_yaw + (e_pid_yaw_im1 + e_pid_yaw_i) / 2 * Ts;
+            Kp_yaw = constants{18};
+            Kd_yaw = constants{19};
+            Ki_yaw = constants{20};
+            U1_yaw = Kp_yaw * e_pid_yaw_i + Kd_yaw * e_dot_pid_yaw + Ki_yaw * e_int_pid_yaw;
+
+            e_pid_Y_im1 = Y_ref(i - 1, 2) - old_states(1, 4);
+            e_pid_Y_i   = Y_ref(i, 2) - states(1, 4);
+            e_dot_pid_Y = (e_pid_Y_i - e_pid_Y_im1) / Ts;
+            e_int_pid_Y = e_int_pid_Y + (e_pid_Y_im1 + e_pid_Y_i) / 2 * Ts;
+            Kp_Y = constants{21};
+            Kd_Y = constants{22};
+            Ki_Y = constants{23};
+            U1_Y = Kp_Y * e_pid_Y_i + Kd_Y * e_dot_pid_Y + Ki_Y * e_int_pid_Y;
+
+            U1 = U1_yaw + U1_Y;
+            
+            if U1 < -pi/6
+                U1 = -pi/6;
+            elseif U1 > pi/6
+                U1 = pi/6;
+            end
+            
+            old_states = states;
+        end
+    end
+    
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    
+    % MPCもしくはPIDのどちらかで計算した制御量を保存
     UTotal(i + 1, :) = U1;
     
     % Simulate the new states
@@ -95,6 +141,7 @@ for i = 1:sim_length - 1
     if imaginary_check_sum ~= 0
         disp('Imaginary part exists - something is wrong');
     end
+
 end
 toc
 

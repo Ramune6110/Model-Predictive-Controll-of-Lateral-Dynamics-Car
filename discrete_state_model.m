@@ -1,4 +1,4 @@
-function [Ad, Bd, Cd, Dd] = discrete_state_model(states)
+function [Ad, Bd, Cd, Dd] = discrete_state_model()
     % Get the constants from the general pool of constants
     constants = initial_constants();
     m     = constants{2}; 
