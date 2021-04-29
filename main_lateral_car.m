@@ -65,7 +65,30 @@ for i = 1:sim_length - 1
     %% Generate simplification matrices for the cost function
    [Hdb, Fdbt, Cdb, Adc] = MPC_simplification(Ad, Bd, Cd, Dd, hz);
    
-   
+   %% Calling the optimizer (quadprog)
+    % Cost function in quadprog: min(du)*1/2*du'Hdb*du+f'du
+    ft = [x_aug_t', r'] * Fdbt;
+    
+    % Hdb must be positive definite for the problem to have finite minimum
+    % Call the solver
+    options = optimoptions('quadprog','Display','off');
+    lb  = -ones(1, hz) * pi/60;
+    ub  = ones(1, hz) * pi/60;
+    Hdb = real(Hdb);
+    Hdb = (Hdb + Hdb') / 2;
+    ft  = real(ft);
+%     [du,fval] = quadprog(Hdb,ft,[],[],[],[],[],[],[],options);
+    [du, fval] = quadprog(Hdb, ft, [], [], [], [], lb, ub, [], options);
+    
+    UTotal(i + 1, :) = U1;
+    
+    % Simulate the new states
+    
+    imaginary_check = imag(states) ~= 0;
+    imaginary_check_sum = sum(imaginary_check);
+    if imaginary_check_sum ~= 0
+        disp('Imaginary part exists - something is wrong');
+    end
 end
 %% Plot the trajectory
 % Trajectory
