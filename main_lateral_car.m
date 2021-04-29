@@ -81,14 +81,14 @@ for i = 1:sim_length - 1
     [du, fval] = quadprog(Hdb, ft, [], [], [], [], lb, ub, [], options);
     
     % Update the real inputs
-    U1 = U1+du(1);
+    U1 = U1 + du(1);
     UTotal(i + 1, :) = U1;
     
     % Simulate the new states
     T = Ts * i: Ts / 30 : Ts * i + Ts;
     [T,x] = ode45(@(t,x) nonlinear_lateral_car_model(t, x, U1), T, states);
     states = x(end,:);
-    statesTotal(i + 1, :) = states;
+    states_total(i + 1, :) = states;
     
     imaginary_check = imag(states) ~= 0;
     imaginary_check_sum = sum(imaginary_check);
@@ -101,7 +101,7 @@ end
 figure(1);
 plot(X_ref(:,2),Y_ref(:,2),'--b','LineWidth',2)
 hold on
-plot(X_ref(:,2),statesTotal(1:end,4),'r','LineWidth',1)
+plot(X_ref(:,2),states_total(1:end,4),'r','LineWidth',1)
 grid on;
 xlabel('x-position [m]','FontSize',15)
 ylabel('y-position [m]','FontSize',15)
