@@ -47,7 +47,24 @@ UTotal = zeros(length(t), 1);
 UTotal(1, :) = U1;
 
 k = 1; % for reading reference signals
-
+for i = 1:sim_length - 1
+    %% Generate discrete LPV Ad, Bd, Cd, Dd matrices
+    [Ad, Bd, Cd, Dd] = discrete_state_model(states);
+    
+    %% Generating the current state and the reference vector
+    x_aug_t = [states'; U1];
+    
+    k = k + controlled_states;
+    if k + controlled_states * hz - 1 <= length(refSignals)
+        r = refSignals(k:k + controlled_states * hz - 1);
+    else
+        r = refSignals(k:length(refSignals));
+        hz = hz - 1;
+    end
+    
+    %% Generate simplification matrices for the cost function
+%     [Hdb, Fdbt, Cdb, Adc] = MPC_simplification(Ad, Bd, Cd, Dd, hz);
+end
 %% Plot the trajectory
 % Trajectory
 figure(1);
