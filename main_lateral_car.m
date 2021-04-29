@@ -8,13 +8,10 @@ constants         = initial_constants();
 Ts                = constants{10};
 controlled_states = constants{14}; % number of controlled states in this script
 hz                = constants{15}; % horizon period
-x_dot             = constants{16};
 
 %% Load the trajectory
 t = 0:Ts:7; % Use 7 second for lane change
-r = constants{17};
-f = constants{18};
-[psi_ref, X_ref, Y_ref] = trajectory_generator(t, r, f);
+[psi_ref, X_ref, Y_ref] = trajectory_generator(t);
 
 sim_length = length(t); % Number of control loop iterations
 
@@ -28,14 +25,14 @@ for i = 1:controlled_states:length(refSignals)
 end
 
 %% Load the initial state
+y       = Y_ref(1, 2);
 y_dot   = 0;
 psi     = psi_ref(1, 2);
 psi_dot = 0;
-Y       = Y_ref(1, 2);
 
 % 状態量は以下の4つ
 % Vehicle Dynamics and Control (2nd edition) by Rajesh Rajamani. They are in Chapter 2.3. 
-states = [y_dot, psi, psi_dot, Y];
+states = [y, y_dot, psi, psi_dot];
 % 全ての状態を保存する配列。各時間毎に保存。plotに使用
 states_total = zeros(length(t), length(states));
 states_total(1, :) = states;
@@ -50,7 +47,7 @@ k = 1; % for reading reference signals
 tic;
 for i = 1:sim_length - 1
     %% Generate discrete LPV Ad, Bd, Cd, Dd matrices
-    [Ad, Bd, Cd, Dd] = discrete_state_model(states);
+    [Ad, Bd, Cd, Dd] = discrete_state_model();
     
     %% Generating the current state and the reference vector
     x_aug_t = [states'; U1];

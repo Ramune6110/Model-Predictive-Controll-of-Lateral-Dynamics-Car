@@ -4,7 +4,7 @@ function [] = DrowResults(X_ref, Y_ref, psi_ref, states_total, UTotal, sim_lengt
     figure(1);
     plot(X_ref(:,2),Y_ref(:,2),'--b','LineWidth',2)
     hold on
-    plot(X_ref(:,2),states_total(1:end,4),'r','LineWidth',1)
+    plot(X_ref(:,2),states_total(1:end,1),'r','LineWidth',1)
     grid on;
     xlabel('x-position [m]','FontSize',15)
     ylabel('y-position [m]','FontSize',15)
@@ -21,13 +21,13 @@ function [] = DrowResults(X_ref, Y_ref, psi_ref, states_total, UTotal, sim_lengt
 
     hold on
     subplot(2,1,1)
-    plot(t(1:sim_length),states_total(1:sim_length,4),'r','LineWidth',1)
+    plot(t(1:sim_length),states_total(1:sim_length,1),'r','LineWidth',1)
     grid on
     xlabel('time [s]','FontSize',15)
     ylabel('y-position [m]','FontSize',15)
     legend({'y-ref','y-position'},'Location','northeast','FontSize',15)
     subplot(2,1,2)
-    plot(t(1:sim_length),states_total(1:sim_length,2),'r','LineWidth',1)
+    plot(t(1:sim_length),states_total(1:sim_length,3),'r','LineWidth',1)
     grid on
     legend({'psi-ref','psi-position'},'Location','northeast','FontSize',15)
     xlabel('time [s]','FontSize',15)

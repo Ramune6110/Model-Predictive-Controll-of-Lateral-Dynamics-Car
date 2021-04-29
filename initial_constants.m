@@ -24,11 +24,9 @@ function constants = initial_constants()
     % Reference Signals‚ÌŒÂ”. ¡‰ñ‚Ípsi‚ÆY‚Ì“ñ‚Â‚È‚Ì‚Å2‚Æ‚·‚é
     controlled_states = 2;
     
-    hz    = 15; % horizon period
-    x_dot = 20;
-    r     = 5;
-    f     = 0.025;
+    hz = 15; % horizon period
+    Vx = 20; % ‰¡•ûŒü‚Ì§Œä‚Ì‚İ‚È‚Ì‚Å‘¬“x‚Íˆê’è
     
-    constants={g m cd cr Iz Caf Car lf lr Ts Q S R controlled_states hz x_dot r f};
+    constants={g m cd cr Iz Caf Car lf lr Ts Q S R controlled_states hz Vx};
     
 end
