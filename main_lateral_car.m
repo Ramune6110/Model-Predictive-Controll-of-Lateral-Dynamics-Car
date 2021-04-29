@@ -47,6 +47,7 @@ UTotal = zeros(length(t), 1);
 UTotal(1, :) = U1;
 
 k = 1; % for reading reference signals
+tic;
 for i = 1:sim_length - 1
     %% Generate discrete LPV Ad, Bd, Cd, Dd matrices
     [Ad, Bd, Cd, Dd] = discrete_state_model(states);
@@ -77,7 +78,6 @@ for i = 1:sim_length - 1
     Hdb = real(Hdb);
     Hdb = (Hdb + Hdb') / 2;
     ft  = real(ft);
-%     [du,fval] = quadprog(Hdb,ft,[],[],[],[],[],[],[],options);
     [du, fval] = quadprog(Hdb, ft, [], [], [], [], lb, ub, [], options);
     
     % Update the real inputs
@@ -96,13 +96,9 @@ for i = 1:sim_length - 1
         disp('Imaginary part exists - something is wrong');
     end
 end
-%% Plot the trajectory
-% Trajectory
-figure(1);
-plot(X_ref(:,2),Y_ref(:,2),'--b','LineWidth',2)
-hold on
-plot(X_ref(:,2),states_total(1:end,4),'r','LineWidth',1)
-grid on;
-xlabel('x-position [m]','FontSize',15)
-ylabel('y-position [m]','FontSize',15)
-legend({'position-ref','position'},'Location','northeast','FontSize',15)
+toc
+
+disp("simulation end!");
+
+% Plot the results
+DrowResults(X_ref, Y_ref, psi_ref, states_total, UTotal, sim_length, t);
