@@ -21,6 +21,7 @@ function constants = initial_constants()
     S = [10 0; 0 1]; % weights for the final horizon outputs (output x output)
     R = 30;          % weights for inputs (input x input)
     
+    % Reference Signals‚ÌŒÂ”. ¡‰ñ‚Ípsi‚ÆY‚Ì“ñ‚Â‚È‚Ì‚Å2‚Æ‚·‚é
     controlled_states = 2;
     
     hz    = 15; % horizon period
