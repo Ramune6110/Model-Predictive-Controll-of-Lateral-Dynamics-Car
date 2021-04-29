@@ -63,7 +63,9 @@ for i = 1:sim_length - 1
     end
     
     %% Generate simplification matrices for the cost function
-%     [Hdb, Fdbt, Cdb, Adc] = MPC_simplification(Ad, Bd, Cd, Dd, hz);
+   [Hdb, Fdbt, Cdb, Adc] = MPC_simplification(Ad, Bd, Cd, Dd, hz);
+   
+   
 end
 %% Plot the trajectory
 % Trajectory
